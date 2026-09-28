@@ -1,0 +1,162 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    gdxVersion = '1.13.1'
+}
+
+configurations {
+    javafx
+}
+
+dependencies {
+    implementation "com.badlogicgames.gdx:gdx:${gdxVersion}"
+    implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:${gdxVersion}"
+    runtimeOnly "com.badlogicgames.gdx:gdx-platform:${gdxVersion}:natives-desktop"
+
+    implementation "com.badlogicgames.gdx:gdx-freetype:${gdxVersion}"
+    runtimeOnly "com.badlogicgames.gdx:gdx-freetype-platform:${gdxVersion}:natives-desktop"
+
+    // JavaFX for UI (compile-time and runtime)
+    implementation 'org.openjfx:javafx-controls:26.0.2:win'
+    implementation 'org.openjfx:javafx-fxml:26.0.2:win'
+    implementation 'org.openjfx:javafx-graphics:26.0.2:win'
+    implementation 'org.openjfx:javafx-base:26.0.2:win'
+
+    // Configuration used only to assemble module-path for JavaFX (avoid resolving entire runtimeClasspath)
+    javafx 'org.openjfx:javafx-controls:26.0.2:win'
+    javafx 'org.openjfx:javafx-fxml:26.0.2:win'
+    javafx 'org.openjfx:javafx-graphics:26.0.2:win'
+    javafx 'org.openjfx:javafx-base:26.0.2:win'
+}
+
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+application {
+    mainClass = 'com.chessegame.Main'
+    applicationDefaultJvmArgs = ['--enable-native-access=ALL-UNNAMED']
+}
+
+
+// Tell Gradle where to find the existing source layout (repo uses src/)
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+        resources {
+            // Keep resources empty; assets are loaded from the project root 'assets' folder at runtime
+            srcDirs = []
+        }
+    }
+}
+
+// Ensure run uses project root as working directory so Gdx.files.internal("...") loads from ./assets
+
+// Configure JavaCompile to use module-path for JavaFX
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs += ['--module-path', configurations.javafx.asPath, '--add-modules', 'javafx.controls,javafx.fxml,javafx.graphics']
+}
+
+run {
+    workingDir = projectDir
+    jvmArgs = (jvmArgs ?: []) + ['--module-path', configurations.javafx.asPath, '--add-modules', 'javafx.controls,javafx.fxml,javafx.graphics', '--enable-native-access=ALL-UNNAMED']
+}
+
+// Debug helper: print compiler args and resolved javafx module-path
+task printCompilerArgs {
+    doLast {
+        println "compilerArgs: ${tasks.compileJava.options.compilerArgs}"
+        println "javafx module-path: ${configurations.javafx.asPath}"
+    }
+}
+
+task fatJar(type: Jar) {
+    archiveFileName = 'ChessGame.jar'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes(
+            'Main-Class': 'com.chessegame.Main',
+            'Implementation-Title': 'Chess Game OOP',
+            'Implementation-Version': '1.0.0'
+        )
+    }
+    from sourceSets.main.output
+    dependsOn configurations.runtimeClasspath
+    from {
+        configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+    }
+    // Include assets (excluding stockfish binary) in the JAR as embedded resources
+    from('assets') {
+        exclude 'stockfish/**'
+        into 'assets'
+    }
+    from('assets') {
+        exclude 'stockfish/**'
+    }
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+}
+
+task assembleDistPackage(type: Copy) {
+    dependsOn fatJar
+    into "$projectDir/dist/ChessGame"
+
+    from('build/libs') {
+        include 'ChessGame.jar'
+    }
+    from('.') {
+        include 'Play.bat'
+        include 'Play_Debug.bat'
+        include 'Play_Silent.vbs'
+        include 'Play_Console_Mode.bat'
+        include 'Play_JavaFX_Mode.bat'
+        include 'วิธีเล่น.txt'
+        include 'README.txt'
+    }
+    from('assets') {
+        exclude 'stockfish/src/**'
+        exclude 'stockfish/scripts/**'
+        exclude 'stockfish/wiki/**'
+        into 'assets'
+    }
+}
+
+task packageZip(type: Zip) {
+    dependsOn fatJar
+    archiveFileName = 'ChessGame.zip'
+    destinationDirectory = file("$projectDir")
+
+    from('build/libs') {
+        include 'ChessGame.jar'
+        into 'ChessGame'
+    }
+    from('.') {
+        include 'Play.bat'
+        include 'Play_Debug.bat'
+        include 'Play_Silent.vbs'
+        include 'Play_Console_Mode.bat'
+        include 'Play_JavaFX_Mode.bat'
+        include 'วิธีเล่น.txt'
+        include 'README.txt'
+        into 'ChessGame'
+    }
+    from('assets') {
+        exclude 'stockfish/src/**'
+        exclude 'stockfish/scripts/**'
+        exclude 'stockfish/wiki/**'
+        into 'ChessGame/assets'
+    }
+}
+
+

@@ -1,0 +1,11 @@
+out/
+*.class
+.gradle/
+build/
+bin/
+dist/
+gradle-9.7.0/
+assets/stockfish/
+*.exe
+*.zip
+*.tar

@@ -25,14 +25,7 @@
   * หน้าจอ **2-Column Dashboard** แสดงเป้าหมายยุทธวิธี, แถบความคืบหน้า (Progress Bar) และคำอธิบายตาเดินแบบเรียลไทม์
   * **ระบบลูกศรคำใบ้นีออน (Neon Hint Arrow)**: แสดงทิศทางการเดินที่ถูกต้องบนกระดานทันที
   * สามารถสลับไปเล่นต่อกับ AI จากตำแหน่งกระดานของสายเปิดเกมได้ทันที
-* 🧩 **โหมดแก้ปริศนา (Puzzle Mode)**:
-  * รวม 10 ปริศนาหมากรุกคลาสสิก (Mate in 1, Mate in 2, Fork, Pin, Skewer)
-  * มีระบบตรวจสอบตาเดินอัตโนมัติ, ระบบคำใบ้, และเฉลยกลยุทธ์
-* 📊 **ระบบวิเคราะห์เกมหลังจบแมตช์ (Game Review & Analysis)**:
-  * ระบบรีวิวเกมสไตล์ Chess.com / Lichess คำนวณค่า **Accuracy %** ทั้งฝ่ายขาวและดำ
-  * จำแนกคุณภาพตาเดิน 9 ระดับ: **Brilliant, Great, Best, Excellent, Good, Inaccuracy, Mistake, Miss, Blunder**
-  * กราฟและหลอดประเมินแต้มได้เปรียบ (Evaluation Bar) แบบเรียลไทม์
-  * แนะนำตาเดินที่ดีที่สุดด้วยลูกศรนีออนเรืองแสงสีเขียวบนกระดาน
+
 
 ---
 
@@ -62,7 +55,7 @@
 * **MVV-LVA (Most Valuable Victim - Least Valuable Attacker)**: จัดลำดับการกินหมากที่มีมูลค่าสูงก่อน ช่วยเพิ่มความเร็วการตัดกิ่งถึง 2 เท่า
 * **Quiescence Search**: ค้นหาการกินหมากต่อเนื่องในชั้นลึกสุด ป้องกันปัญหาจุดบอดสายตา (Horizon Effect)
 * **Iterative Deepening Search (IDS)**: ควบคุมเวลาค้นหาไม่ให้กระทบต่อเฟรมเรต UI (ตอบสนองไวภายใน 200ms - 350ms)
-* **Stockfish UCI Engine Integration**: รองรับการเชื่อมต่อกับ Stockfish Engine ภายนอกเพื่อการวิเคราะห์ระดับ Super Grandmaster
+* **Stockfish UCI Engine Integration**: รองรับการเชื่อมต่อกับ Stockfish Engine ภายนอกเพื่อการวิเคราะห์ระดับ Super Grandmaster (open soruce)
 
 ---
 

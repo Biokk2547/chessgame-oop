@@ -73,7 +73,7 @@ public class MainMenuScreen extends ScreenAdapter {
     public void show() {
         System.out.println("[DEBUG] MainMenuScreen.show() STARTED");
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camera.setToOrtho(false, UiLayout.width(), UiLayout.height());
         batch = new SpriteBatch();
         shapes = new ShapeRenderer();
         particleSystem = new ParticleSystem();
@@ -155,62 +155,57 @@ public class MainMenuScreen extends ScreenAdapter {
 
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-                float y = Gdx.graphics.getHeight() - screenY;
-                float x = screenX;
+                float y = UiLayout.height() - UiLayout.y(screenY);
+                float x = UiLayout.x(screenX);
                 float menuW = 340f;
-                float menuX = (Gdx.graphics.getWidth() - menuW) / 2f;
+                float menuX = (UiLayout.width() - menuW) / 2f;
                 float btnH = 44f;
 
                 // Top-Right Music Toggle Button
                 float musicBtnW = 150f;
                 float musicBtnH = 38f;
-                float musicBtnX = Gdx.graphics.getWidth() - musicBtnW - 20f;
-                float musicBtnY = Gdx.graphics.getHeight() - musicBtnH - 20f;
+                float musicBtnX = UiLayout.width() - musicBtnW - 20f;
+                float musicBtnY = UiLayout.height() - musicBtnH - 20f;
                 if (x >= musicBtnX && x <= musicBtnX + musicBtnW && y >= musicBtnY && y <= musicBtnY + musicBtnH) {
                     MusicManager.getInstance().toggleMute();
                     return true;
                 }
 
-                // Button 1: Quick Play (y: 480f - 524f)
-                if (x >= menuX && x <= menuX + menuW && y >= 480f && y <= 480f + btnH) {
+                // Button 1: Quick Play
+                if (x >= menuX && x <= menuX + menuW && y >= menuButtonY(0) && y <= menuButtonY(0) + btnH) {
                     app.setScreen(new GameScreen(app, isVsAi, aiDepth, aiStyle));
                     return true;
                 }
-                // Button 2: Boss Rush Mode (y: 422f - 466f)
-                if (x >= menuX && x <= menuX + menuW && y >= 422f && y <= 422f + btnH) {
+                // Button 2: Boss Rush Mode
+                if (x >= menuX && x <= menuX + menuW && y >= menuButtonY(1) && y <= menuButtonY(1) + btnH) {
                     app.setScreen(new BossLevelSelectScreen(app));
                     return true;
                 }
-                // Button 3: Opening Practice Mode (y: 364f - 408f)
-                if (x >= menuX && x <= menuX + menuW && y >= 364f && y <= 364f + btnH) {
+                // Button 3: Opening Practice Mode
+                if (x >= menuX && x <= menuX + menuW && y >= menuButtonY(2) && y <= menuButtonY(2) + btnH) {
                     app.setScreen(new OpeningSelectScreen(app));
                     return true;
                 }
-                // Button 4: Puzzle Mode (y: 306f - 350f)
-                if (x >= menuX && x <= menuX + menuW && y >= 306f && y <= 306f + btnH) {
-                    app.setScreen(new PuzzleScreen(app));
-                    return true;
-                }
-                // Button 5: Toggle Game Mode (y: 248f - 292f)
-                if (x >= menuX && x <= menuX + menuW && y >= 248f && y <= 248f + btnH) {
+                // Button 4: Toggle Game Mode
+                if (x >= menuX && x <= menuX + menuW && y >= menuButtonY(3) && y <= menuButtonY(3) + btnH) {
                     isVsAi = !isVsAi;
                     return true;
                 }
-                // Button 6: AI Depth Stepper (y: 190f - 234f)
-                if (x >= menuX && x <= menuX + menuW && y >= 190f && y <= 190f + btnH) {
+                // Button 5: AI Depth Stepper
+                if (x >= menuX && x <= menuX + menuW && y >= menuButtonY(4) && y <= menuButtonY(4) + btnH) {
                     aiDepth++;
                     if (aiDepth > 6) aiDepth = 1;
                     return true;
                 }
-                // Button 7: AI Boss Style (y: 132f - 176f)
-                if (x >= menuX && x <= menuX + menuW && y >= 132f && y <= 132f + btnH) {
+                // Button 6: AI Boss Style
+                if (x >= menuX && x <= menuX + menuW && y >= menuButtonY(5) && y <= menuButtonY(5) + btnH) {
                     if (aiStyle == Evaluation.AIStyle.MASTER) aiStyle = Evaluation.AIStyle.AGGRESSIVE;
                     else if (aiStyle == Evaluation.AIStyle.AGGRESSIVE) aiStyle = Evaluation.AIStyle.DEFENSIVE;
                     else aiStyle = Evaluation.AIStyle.MASTER;
                     return true;
                 }
-                // Button 8: Exit Game (y: 54f - 98f)
-                if (x >= menuX && x <= menuX + menuW && y >= 54f && y <= 54f + btnH) {
+                // Button 7: Exit Game
+                if (x >= menuX && x <= menuX + menuW && y >= menuButtonY(6) && y <= menuButtonY(6) + btnH) {
                     Gdx.app.exit();
                     return true;
                 }
@@ -222,7 +217,7 @@ public class MainMenuScreen extends ScreenAdapter {
     @Override
     public void resize(int width, int height) {
         if (camera != null) {
-            camera.setToOrtho(false, width, height);
+            camera.setToOrtho(false, UiLayout.width(), UiLayout.height());
             camera.update();
         }
     }
@@ -231,7 +226,7 @@ public class MainMenuScreen extends ScreenAdapter {
     public void render(float delta) {
         if (!firstRenderLogged) {
             firstRenderLogged = true;
-            System.out.println("[DEBUG] MainMenuScreen.render() FIRST FRAME! screenW=" + Gdx.graphics.getWidth() + ", screenH=" + Gdx.graphics.getHeight());
+            System.out.println("[DEBUG] MainMenuScreen.render() FIRST FRAME! screenW=" + UiLayout.width() + ", screenH=" + UiLayout.height());
         }
         stateTime += delta;
         particleSystem.update(delta);
@@ -239,14 +234,14 @@ public class MainMenuScreen extends ScreenAdapter {
         Gdx.gl.glClearColor(0.08f, 0.08f, 0.11f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        int screenW = Gdx.graphics.getWidth();
-        int screenH = Gdx.graphics.getHeight();
+        int screenW = UiLayout.width();
+        int screenH = UiLayout.height();
 
         if (camera == null) camera = new OrthographicCamera();
         camera.setToOrtho(false, screenW, screenH);
         camera.update();
 
-        Gdx.gl.glViewport(0, 0, screenW, screenH);
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
         batch.setProjectionMatrix(camera.combined);
         shapes.setProjectionMatrix(camera.combined);
 
@@ -268,9 +263,9 @@ public class MainMenuScreen extends ScreenAdapter {
         // 3. Render Background Particle Effects
         particleSystem.render(shapes);
 
-        float centerX = Gdx.graphics.getWidth() / 2f;
+        float centerX = UiLayout.width() / 2f;
         float menuW = 340f;
-        float menuX = (Gdx.graphics.getWidth() - menuW) / 2f;
+        float menuX = (UiLayout.width() - menuW) / 2f;
         float btnH = 44f;
 
         // --- 4. Filled Shapes (Backdrop & Menu Action Cards) ---
@@ -278,43 +273,39 @@ public class MainMenuScreen extends ScreenAdapter {
 
         // Header Title Card Backdrop
         shapes.setColor(0.10f, 0.11f, 0.16f, 0.95f);
-        shapes.rect(centerX - 240f, Gdx.graphics.getHeight() - 110f, 480f, 86f);
+        shapes.rect(centerX - 240f, UiLayout.height() - 110f, 480f, 86f);
         // Header gold underline accent
         shapes.setColor(0.95f, 0.75f, 0.25f, 0.90f);
-        shapes.rect(centerX - 240f, Gdx.graphics.getHeight() - 110f, 480f, 3f);
+        shapes.rect(centerX - 240f, UiLayout.height() - 110f, 480f, 3f);
 
         // Button 1: Quick Play (Vibrant Emerald Green)
         shapes.setColor(0.12f, 0.68f, 0.40f, 1f);
-        shapes.rect(menuX, 480f, menuW, btnH);
+        shapes.rect(menuX, menuButtonY(0), menuW, btnH);
 
         // Button 2: Boss Rush Mode (Warm Amber / Gold with pulse)
         float pulse = 0.92f + 0.08f * (float) Math.sin(stateTime * 4.0f);
         shapes.setColor(0.92f * pulse, 0.58f * pulse, 0.12f, 1f);
-        shapes.rect(menuX, 422f, menuW, btnH);
+        shapes.rect(menuX, menuButtonY(1), menuW, btnH);
 
         // Button 3: Opening Practice (Electric Cyan / Teal)
         shapes.setColor(0.15f, 0.65f, 0.85f, 1f);
-        shapes.rect(menuX, 364f, menuW, btnH);
+        shapes.rect(menuX, menuButtonY(2), menuW, btnH);
 
-        // Button 4: Puzzle Mode (Sapphire / Indigo)
-        shapes.setColor(0.30f, 0.45f, 0.85f, 1f);
-        shapes.rect(menuX, 306f, menuW, btnH);
-
-        // Button 5: Game Mode (Royal Purple)
+        // Button 4: Game Mode (Royal Purple)
         shapes.setColor(isVsAi ? new Color(0.52f, 0.32f, 0.78f, 1f) : new Color(0.35f, 0.40f, 0.50f, 1f));
-        shapes.rect(menuX, 248f, menuW, btnH);
+        shapes.rect(menuX, menuButtonY(3), menuW, btnH);
 
-        // Button 6: AI Depth (Cobalt Blue)
+        // Button 5: AI Depth (Cobalt Blue)
         shapes.setColor(isVsAi ? new Color(0.22f, 0.45f, 0.75f, 1f) : new Color(0.25f, 0.25f, 0.30f, 1f));
-        shapes.rect(menuX, 190f, menuW, btnH);
+        shapes.rect(menuX, menuButtonY(4), menuW, btnH);
 
-        // Button 7: AI Boss Style (Coral Red)
+        // Button 6: AI Boss Style (Coral Red)
         shapes.setColor(isVsAi ? new Color(0.85f, 0.35f, 0.25f, 1f) : new Color(0.25f, 0.25f, 0.30f, 1f));
-        shapes.rect(menuX, 132f, menuW, btnH);
+        shapes.rect(menuX, menuButtonY(5), menuW, btnH);
 
-        // Button 8: Exit Game (Muted Dark Slate Red)
+        // Button 7: Exit Game (Muted Dark Slate Red)
         shapes.setColor(0.38f, 0.18f, 0.18f, 1f);
-        shapes.rect(menuX, 54f, menuW, btnH);
+        shapes.rect(menuX, menuButtonY(6), menuW, btnH);
 
         // Music Toggle Card (Top-Right)
         float musicBtnW = 150f;
@@ -333,26 +324,25 @@ public class MainMenuScreen extends ScreenAdapter {
         // Header Title Labels (Centered mathematically with GlyphLayout)
         titleFont.setColor(Color.GOLD);
         layout.setText(titleFont, "ศึกหมากรุกมหาประลัย");
-        titleFont.draw(batch, "ศึกหมากรุกมหาประลัย", centerX - layout.width / 2f, Gdx.graphics.getHeight() - 42f);
+        titleFont.draw(batch, "ศึกหมากรุกมหาประลัย", centerX - layout.width / 2f, UiLayout.height() - 42f);
 
         font.setColor(new Color(0.85f, 0.90f, 1.0f, 1f));
         layout.setText(font, "CHESS BATTLE OF LEGENDS");
-        font.draw(batch, "CHESS BATTLE OF LEGENDS", centerX - layout.width / 2f, Gdx.graphics.getHeight() - 78f);
+        font.draw(batch, "CHESS BATTLE OF LEGENDS", centerX - layout.width / 2f, UiLayout.height() - 78f);
 
         // Draw Menu Action Button Text Labels (All crisp WHITE, perfectly centered)
-        drawButtonText(batch, "เล่นเกมอิสระ (Quick Play)", menuX, 480f, menuW, btnH);
-        drawButtonText(batch, "โหมดประลองบอส (Boss Rush)", menuX, 422f, menuW, btnH);
-        drawButtonText(batch, "โหมดฝึกซ้อมเปิดเกม (Opening)", menuX, 364f, menuW, btnH);
-        drawButtonText(batch, "โหมดฝึกแก้ปริศนา (Puzzle Mode)", menuX, 306f, menuW, btnH);
-        drawButtonText(batch, isVsAi ? "โหมดการเล่น: vs AI" : "โหมดการเล่น: 2 คน", menuX, 248f, menuW, btnH);
-        drawButtonText(batch, "ระดับ AI: Depth " + aiDepth, menuX, 190f, menuW, btnH);
+        drawButtonText(batch, "เล่นเกมอิสระ (Quick Play)", menuX, menuButtonY(0), menuW, btnH);
+        drawButtonText(batch, "โหมดประลองบอส (Boss Rush)", menuX, menuButtonY(1), menuW, btnH);
+        drawButtonText(batch, "โหมดฝึกซ้อมเปิดเกม (Opening)", menuX, menuButtonY(2), menuW, btnH);
+        drawButtonText(batch, isVsAi ? "โหมดการเล่น: vs AI" : "โหมดการเล่น: 2 คน", menuX, menuButtonY(3), menuW, btnH);
+        drawButtonText(batch, "ระดับ AI: Depth " + aiDepth, menuX, menuButtonY(4), menuW, btnH);
 
         String styleLabel = "สไตล์ AI: เซียน (Master)";
         if (aiStyle == Evaluation.AIStyle.AGGRESSIVE) styleLabel = "สไตล์ AI: สายบุก (Aggressive)";
         else if (aiStyle == Evaluation.AIStyle.DEFENSIVE) styleLabel = "สไตล์ AI: สายรับ (Defensive)";
-        drawButtonText(batch, styleLabel, menuX, 132f, menuW, btnH);
+        drawButtonText(batch, styleLabel, menuX, menuButtonY(5), menuW, btnH);
 
-        drawButtonText(batch, "ออกจากเกม", menuX, 54f, menuW, btnH);
+        drawButtonText(batch, "ออกจากเกม", menuX, menuButtonY(6), menuW, btnH);
 
         // Music Toggle Label (Top-Right, perfectly centered)
         font.setColor(Color.WHITE);
@@ -363,12 +353,15 @@ public class MainMenuScreen extends ScreenAdapter {
         batch.end();
     }
 
+    private float menuButtonY(int index) {
+        return (UiLayout.height() - 392f) / 2f + 348f - index * 58f;
+    }
+
     private void drawButtonText(SpriteBatch batch, String text, float x, float y, float w, float h) {
         layout.setText(font, text);
-        float tx = x + (w - layout.width) / 2f;
-        float ty = y + (h + layout.height) / 2f;
         font.setColor(Color.WHITE);
-        font.draw(batch, text, tx, ty);
+        UiLayout.text(font, batch, text, x + 8f, y + (h + Math.min(layout.height, h - 8f)) / 2f,
+                w - 16f, h - 8f, com.badlogic.gdx.utils.Align.center, false);
     }
 
     @Override

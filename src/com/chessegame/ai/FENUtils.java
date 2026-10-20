@@ -48,18 +48,18 @@ public class FENUtils {
         // 3. Castling rights based on actual King/Rook positions
         StringBuilder castling = new StringBuilder();
         Piece wKing = board.getPiece(new Position(7, 4));
-        if (wKing instanceof King && !wKing.hasMoved()) {
+        if (wKing instanceof King && wKing.getColor() == Piece.Color.WHITE && !wKing.hasMoved()) {
             Piece wRookK = board.getPiece(new Position(7, 7));
-            if (wRookK instanceof Rook && !wRookK.hasMoved()) castling.append('K');
+            if (wRookK instanceof Rook && wRookK.getColor() == Piece.Color.WHITE && !wRookK.hasMoved()) castling.append('K');
             Piece wRookQ = board.getPiece(new Position(7, 0));
-            if (wRookQ instanceof Rook && !wRookQ.hasMoved()) castling.append('Q');
+            if (wRookQ instanceof Rook && wRookQ.getColor() == Piece.Color.WHITE && !wRookQ.hasMoved()) castling.append('Q');
         }
         Piece bKing = board.getPiece(new Position(0, 4));
-        if (bKing instanceof King && !bKing.hasMoved()) {
+        if (bKing instanceof King && bKing.getColor() == Piece.Color.BLACK && !bKing.hasMoved()) {
             Piece bRookK = board.getPiece(new Position(0, 7));
-            if (bRookK instanceof Rook && !bRookK.hasMoved()) castling.append('k');
+            if (bRookK instanceof Rook && bRookK.getColor() == Piece.Color.BLACK && !bRookK.hasMoved()) castling.append('k');
             Piece bRookQ = board.getPiece(new Position(0, 0));
-            if (bRookQ instanceof Rook && !bRookQ.hasMoved()) castling.append('q');
+            if (bRookQ instanceof Rook && bRookQ.getColor() == Piece.Color.BLACK && !bRookQ.hasMoved()) castling.append('q');
         }
         if (castling.length() == 0) {
             sb.append(" -");
@@ -97,6 +97,24 @@ public class FENUtils {
         String fen = toFEN(board, activeColor);
         String[] parts = fen.split("\\s+");
         if (parts.length >= 4) {
+            // An unavailable en-passant capture must not distinguish repetitions.
+            if (!parts[3].equals("-")) {
+                Position ep = fromUCISquare(parts[3]);
+                int pawnRow = ep.row + (activeColor == Piece.Color.WHITE ? 1 : -1);
+                boolean canCapture = false;
+                for (int dc : new int[] {-1, 1}) {
+                    int col = ep.col + dc;
+                    if (col < 0 || col > 7) continue;
+                    Position from = new Position(pawnRow, col);
+                    Piece pawn = board.getPiece(from);
+                    if (pawn instanceof com.chessegame.model.Pawn && pawn.getColor() == activeColor &&
+                            com.chessegame.logic.ChessUtils.isLegalMove(board, from, ep, activeColor)) {
+                        canCapture = true;
+                        break;
+                    }
+                }
+                if (!canCapture) parts[3] = "-";
+            }
             return parts[0] + " " + parts[1] + " " + parts[2] + " " + parts[3];
         }
         return fen;
@@ -159,6 +177,7 @@ public class FENUtils {
                     case 'k': piece = new com.chessegame.model.King(color); break;
                 }
                 if (piece != null && row < 8 && col < 8) {
+                    piece.setMoved(true);
                     board.setPiece(new Position(row, col), piece);
                 }
                 col++;
@@ -169,6 +188,38 @@ public class FENUtils {
         if (parts.length > 1 && parts[1].equalsIgnoreCase("b")) {
             activeColor = Piece.Color.BLACK;
         }
+        String rights = parts.length > 2 ? parts[2] : "-";
+        restoreCastlingRight(board, rights, 'K', Piece.Color.WHITE, 7, 7);
+        restoreCastlingRight(board, rights, 'Q', Piece.Color.WHITE, 7, 0);
+        restoreCastlingRight(board, rights, 'k', Piece.Color.BLACK, 0, 7);
+        restoreCastlingRight(board, rights, 'q', Piece.Color.BLACK, 0, 0);
+
+        if (parts.length > 3 && !parts[3].equals("-")) {
+            Position ep = fromUCISquare(parts[3]);
+            int expectedRow = activeColor == Piece.Color.WHITE ? 2 : 5;
+            if (ep != null && ep.row == expectedRow) {
+                int direction = activeColor == Piece.Color.WHITE ? 1 : -1;
+                Position lastTo = new Position(ep.row + direction, ep.col);
+                Piece pawn = board.getPiece(lastTo);
+                if (pawn instanceof com.chessegame.model.Pawn && pawn.getColor() != activeColor) {
+                    board.setLastMove(new Position(ep.row - direction, ep.col), lastTo);
+                }
+            }
+        }
+        if (parts.length > 4) board.setHalfMoveClock(Integer.parseInt(parts[4]));
+        if (parts.length > 5) board.setFullMoveNumber(Integer.parseInt(parts[5]));
         return activeColor;
+    }
+
+    private static void restoreCastlingRight(Board board, String rights, char right,
+                                             Piece.Color color, int row, int rookCol) {
+        if (rights.indexOf(right) < 0) return;
+        Piece king = board.getPiece(new Position(row, 4));
+        Piece rook = board.getPiece(new Position(row, rookCol));
+        if (king instanceof King && king.getColor() == color &&
+                rook instanceof Rook && rook.getColor() == color) {
+            king.setMoved(false);
+            rook.setMoved(false);
+        }
     }
 }

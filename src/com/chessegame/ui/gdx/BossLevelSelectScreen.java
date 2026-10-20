@@ -74,7 +74,7 @@ public class BossLevelSelectScreen extends ScreenAdapter {
     @Override
     public void show() {
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camera.setToOrtho(false, UiLayout.width(), UiLayout.height());
 
         batch = new SpriteBatch();
         shapes = new ShapeRenderer();
@@ -166,7 +166,7 @@ public class BossLevelSelectScreen extends ScreenAdapter {
     @Override
     public void resize(int width, int height) {
         if (camera != null) {
-            camera.setToOrtho(false, width, height);
+            camera.setToOrtho(false, UiLayout.width(), UiLayout.height());
             camera.update();
         }
     }
@@ -184,11 +184,11 @@ public class BossLevelSelectScreen extends ScreenAdapter {
 
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-                float x = screenX;
-                float y = Gdx.graphics.getHeight() - screenY;
+                float x = UiLayout.x(screenX);
+                float y = UiLayout.height() - UiLayout.y(screenY);
 
-                int screenW = Gdx.graphics.getWidth();
-                int screenH = Gdx.graphics.getHeight();
+                int screenW = UiLayout.width();
+                int screenH = UiLayout.height();
 
                 // Bottom Back Button
                 float backBtnW = 200f;
@@ -205,7 +205,7 @@ public class BossLevelSelectScreen extends ScreenAdapter {
                 float marginX = 24f;
                 float availableW = screenW - (marginX * 2f);
                 float gap = 14f;
-                float cardW = Math.min(180f, (availableW - (gap * 4f)) / 5f);
+                float cardW = Math.min(185f, (availableW - (gap * 4f)) / 5f);
                 float cardH = 340f;
                 float startX = (screenW - (5 * cardW + 4 * gap)) / 2f;
                 float cardY = (screenH - cardH) / 2f - 10f;
@@ -233,14 +233,14 @@ public class BossLevelSelectScreen extends ScreenAdapter {
         stateTime += delta;
         particleSystem.update(delta);
 
-        int screenW = Gdx.graphics.getWidth();
-        int screenH = Gdx.graphics.getHeight();
+        int screenW = UiLayout.width();
+        int screenH = UiLayout.height();
 
         if (camera == null) camera = new OrthographicCamera();
         camera.setToOrtho(false, screenW, screenH);
         camera.update();
 
-        Gdx.gl.glViewport(0, 0, screenW, screenH);
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
         batch.setProjectionMatrix(camera.combined);
         shapes.setProjectionMatrix(camera.combined);
 

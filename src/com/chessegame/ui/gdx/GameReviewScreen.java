@@ -183,7 +183,7 @@ public class GameReviewScreen extends ScreenAdapter {
     @Override
     public void show() {
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camera.setToOrtho(false, UiLayout.width(), UiLayout.height());
 
         batch = new SpriteBatch();
         shapes = new ShapeRenderer();
@@ -326,14 +326,14 @@ public class GameReviewScreen extends ScreenAdapter {
     @Override
     public void resize(int width, int height) {
         if (camera != null) {
-            camera.setToOrtho(false, width, height);
+            camera.setToOrtho(false, UiLayout.width(), UiLayout.height());
             camera.update();
         }
     }
 
     private float getBoardSize() {
-        float screenW = Gdx.graphics.getWidth();
-        float screenH = Gdx.graphics.getHeight();
+        float screenW = UiLayout.width();
+        float screenH = UiLayout.height();
         float availableH = screenH - 95f - 65f;
         float availableW = (screenW - 400f) * 0.95f;
         float s = Math.min(availableW, availableH);
@@ -409,8 +409,8 @@ public class GameReviewScreen extends ScreenAdapter {
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
                 if (isAnalyzing) return true;
 
-                float x = screenX;
-                float y = Gdx.graphics.getHeight() - screenY;
+                float x = UiLayout.x(screenX);
+                float y = UiLayout.height() - UiLayout.y(screenY);
 
                 float boardSize = getBoardSize();
                 float boardX = getBoardX();
@@ -470,7 +470,7 @@ public class GameReviewScreen extends ScreenAdapter {
 
                 // 2. Right Panel Layout Coordinates
                 float panelX = boardX + boardSize + 18f;
-                float panelW = Gdx.graphics.getWidth() - panelX - 20f;
+                float panelW = UiLayout.width() - panelX - 20f;
                 float panelH = boardSize + 38f;
                 float panelY = boardY - 38f;
 
@@ -574,14 +574,14 @@ public class GameReviewScreen extends ScreenAdapter {
         evilBoxAnimator.update(delta);
         particleSystem.update(delta);
 
-        int screenW = Gdx.graphics.getWidth();
-        int screenH = Gdx.graphics.getHeight();
+        int screenW = UiLayout.width();
+        int screenH = UiLayout.height();
 
         if (camera == null) camera = new OrthographicCamera();
         camera.setToOrtho(false, screenW, screenH);
         camera.update();
 
-        Gdx.gl.glViewport(0, 0, screenW, screenH);
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
         batch.setProjectionMatrix(camera.combined);
         shapes.setProjectionMatrix(camera.combined);
 
@@ -1023,7 +1023,9 @@ public class GameReviewScreen extends ScreenAdapter {
                 titleFont.draw(batch, "ตาเดินที่ " + currentRev.getMoveNumber() + " : " + currentRev.getNotation(), px, py);
 
                 smallFont.setColor(new Color(0.7f, 0.75f, 0.85f, 1f));
-                smallFont.draw(batch, "Engine: " + report.getEngineName(), panelX + panelW - 230f, py);
+                py -= 24f;
+                UiLayout.text(smallFont, batch, "Engine: " + report.getEngineName(), px, py,
+                        panelW - 32f, 18f, com.badlogic.gdx.utils.Align.left, false);
                 py -= 26f;
 
                 titleFont.draw(batch, "[" + q.getLabelThai() + " " + q.getSymbol() + "]", px, py);
@@ -1046,8 +1048,9 @@ public class GameReviewScreen extends ScreenAdapter {
                 font.setColor(new Color(0.9f, 0.95f, 1.0f, 1f));
                 font.draw(batch, "บทวิเคราะห์:", px, py);
                 py -= 20f;
-                font.draw(batch, currentRev.getExplanationThai(), px, py);
-                py -= 42f;
+                UiLayout.text(font, batch, currentRev.getExplanationThai(), px, py,
+                        panelW - 32f, 60f, com.badlogic.gdx.utils.Align.left, true);
+                py -= 76f;
 
                 // Avatar and Reaction Dialogue (Feature 6)
                 boolean isWhite = (currentRev.getPlayerColor() == Piece.Color.WHITE);
@@ -1071,7 +1074,8 @@ public class GameReviewScreen extends ScreenAdapter {
                 if (!isWhite && bossLevel != null) {
                     reactionText = "[" + bossLevel.getBossName() + "]: " + reactionText;
                 }
-                font.draw(batch, reactionText, px + 56f, py - 4f);
+                UiLayout.text(font, batch, reactionText, px + 56f, py - 4f,
+                        panelW - 88f, 42f, com.badlogic.gdx.utils.Align.left, true);
 
             } else {
                 titleFont.setColor(Color.GOLD);

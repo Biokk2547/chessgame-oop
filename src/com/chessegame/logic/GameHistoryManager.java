@@ -75,6 +75,7 @@ public class GameHistoryManager {
         if (positionKey.equals(initialPositionKey)) {
             count++;
         }
+        if (current == head) return count;
         Node temp = head.next;
         while (temp != null) {
             if (positionKey.equals(temp.positionKey)) {
@@ -136,6 +137,7 @@ public class GameHistoryManager {
      */
     public List<MoveRecord> getHistory() {
         List<MoveRecord> list = new ArrayList<>();
+        if (current == head) return list;
         Node temp = head.next;
         while (temp != null) {
             list.add(temp.move);

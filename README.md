@@ -1,6 +1,6 @@
 # ♟️ ศึกหมากรุกมหาประลัย (Chess Battle of Legends)
 
-เกมหมากรุกสากล (Chess) ฉบับสมบูรณ์ที่พัฒนาด้วยภาษา **Pure Java** และขับเคลื่อนกราฟิกประสิทธิภาพสูงด้วย **LibGDX** พร้อมระบบการวิเคราะห์เกมระดับ Grandmaster, โหมดฝึกซ้อมเปิดเกม, โหมดแก้ปริศนา, และโหมดประลองบอสพร้อมสกิลพิเศษ
+เกมหมากรุกสากล (Chess) ที่พัฒนาด้วยภาษา **Pure Java** และขับเคลื่อนกราฟิกด้วย **LibGDX** พร้อมระบบการวิเคราะห์เกมระดับ Grandmaster, โหมดฝึกซ้อมเปิดเกม และโหมดประลองบอสพร้อมสกิลพิเศษ
 
 ---
 
@@ -25,9 +25,6 @@
   * หน้าจอ **2-Column Dashboard** แสดงเป้าหมายยุทธวิธี, แถบความคืบหน้า (Progress Bar) และคำอธิบายตาเดินแบบเรียลไทม์
   * **ระบบลูกศรคำใบ้นีออน (Neon Hint Arrow)**: แสดงทิศทางการเดินที่ถูกต้องบนกระดานทันที
   * สามารถสลับไปเล่นต่อกับ AI จากตำแหน่งกระดานของสายเปิดเกมได้ทันที
-* 🧩 **โหมดแก้ปริศนา (Puzzle Mode)**:
-  * รวม 10 ปริศนาหมากรุกคลาสสิก (Mate in 1, Mate in 2, Fork, Pin, Skewer)
-  * มีระบบตรวจสอบตาเดินอัตโนมัติ, ระบบคำใบ้, และเฉลยกลยุทธ์
 * 📊 **ระบบวิเคราะห์เกมหลังจบแมตช์ (Game Review & Analysis)**:
   * ระบบรีวิวเกมสไตล์ Chess.com / Lichess คำนวณค่า **Accuracy %** ทั้งฝ่ายขาวและดำ
   * จำแนกคุณภาพตาเดิน 9 ระดับ: **Brilliant, Great, Best, Excellent, Good, Inaccuracy, Mistake, Miss, Blunder**
@@ -143,9 +140,9 @@ chessegame/
 │   │   ├── Opening.java        # Data Model สายเปิดเกม
 │   │   └── OpeningManager.java # ข้อมูลตำรา 10 สาย และระบบเซฟความคืบหน้า
 │   │
-│   ├── level/                  # โหมดแก้ปริศนาและโหมดบอส
+│   ├── level/                  # โหมดบอสและความคืบหน้า
 │   │   ├── BossLevel.java      # ข้อมูลและสกิลของบอสแต่ละด่าน
-│   │   └── PuzzleManager.java  # คลังโจทย์ปริศนาหมากรุก
+│   │   └── LevelProgressManager.java # บันทึกความคืบหน้าด่านบอส
 │   │
 │   ├── audio/                  # ระบบจัดการเสียง
 │   │   ├── SoundManager.java   # Sound Effects (Move, Capture, Check, Victory)
@@ -159,7 +156,7 @@ chessegame/
 │       ├── OpeningSelectScreen.java # หน้าจอเลือกสายเปิดเกม
 │       ├── OpeningPracticeScreen.java # หน้าจอฝึกซ้อมเปิดเกม (2-Column Dashboard)
 │       ├── BossLevelSelectScreen.java # หน้าจอเลือกบอส
-│       └── PuzzleScreen.java   # หน้าจอฝึกแก้ปริศนา
+│       └── UiLayout.java       # ปรับขนาดหน้าจอและพื้นที่ข้อความ
 │
 ├── build.gradle                # สคริปต์กำหนดการพึ่งพาและการสร้างโปรเจกต์ (Gradle)
 └── README.md                   # เอกสารประกอบโปรเจกต์

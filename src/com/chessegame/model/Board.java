@@ -60,6 +60,11 @@ public class Board {
 
     public Position getLastMoveFrom() { return lastMoveFrom; }
     public Position getLastMoveTo() { return lastMoveTo; }
+    // Restore the preceding move when importing a position with en-passant rights.
+    public void setLastMove(Position from, Position to) {
+        lastMoveFrom = from;
+        lastMoveTo = to;
+    }
     public int getHalfMoveClock() { return halfMoveClock; }
     public void setHalfMoveClock(int halfMoveClock) { this.halfMoveClock = halfMoveClock; }
     public int getFullMoveNumber() { return fullMoveNumber; }
@@ -150,6 +155,7 @@ public class Board {
         if (p instanceof Pawn && (to.row == 0 || to.row == 7)) {
             type = MoveRecord.MoveType.PROMOTION;
             promotedPiece = (promotionChoice != null) ? promotionChoice : new Queen(p.getColor());
+            promotedPiece.setMoved(true);
             setPiece(to, promotedPiece);
         }
 

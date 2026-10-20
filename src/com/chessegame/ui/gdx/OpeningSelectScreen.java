@@ -70,7 +70,7 @@ public class OpeningSelectScreen extends ScreenAdapter {
     @Override
     public void show() {
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camera.setToOrtho(false, UiLayout.width(), UiLayout.height());
 
         batch = new SpriteBatch();
         shapes = new ShapeRenderer();
@@ -153,7 +153,7 @@ public class OpeningSelectScreen extends ScreenAdapter {
     @Override
     public void resize(int width, int height) {
         if (camera != null) {
-            camera.setToOrtho(false, width, height);
+            camera.setToOrtho(false, UiLayout.width(), UiLayout.height());
             camera.update();
         }
     }
@@ -175,11 +175,11 @@ public class OpeningSelectScreen extends ScreenAdapter {
 
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-                float x = screenX;
-                float y = Gdx.graphics.getHeight() - screenY;
+                float x = UiLayout.x(screenX);
+                float y = UiLayout.height() - UiLayout.y(screenY);
 
-                int screenW = Gdx.graphics.getWidth();
-                int screenH = Gdx.graphics.getHeight();
+                int screenW = UiLayout.width();
+                int screenH = UiLayout.height();
 
                 // Top-Right Music Toggle
                 float musicBtnW = 140f;
@@ -240,17 +240,17 @@ public class OpeningSelectScreen extends ScreenAdapter {
     public void render(float delta) {
         particleSystem.update(delta);
 
-        int screenW = Gdx.graphics.getWidth();
-        int screenH = Gdx.graphics.getHeight();
+        int screenW = UiLayout.width();
+        int screenH = UiLayout.height();
 
-        float mx = Gdx.input.getX();
-        float my = screenH - Gdx.input.getY();
+        float mx = UiLayout.x(Gdx.input.getX());
+        float my = screenH - UiLayout.y(Gdx.input.getY());
 
         if (camera == null) camera = new OrthographicCamera();
         camera.setToOrtho(false, screenW, screenH);
         camera.update();
 
-        Gdx.gl.glViewport(0, 0, screenW, screenH);
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
         batch.setProjectionMatrix(camera.combined);
         shapes.setProjectionMatrix(camera.combined);
 
@@ -426,31 +426,29 @@ public class OpeningSelectScreen extends ScreenAdapter {
             titleFont.setColor(Color.GOLD);
             layout.setText(titleFont, op.getNameEn());
             float titleY = cy + cardH - 36f;
-            titleFont.draw(batch, op.getNameEn(), cx + (cardW - layout.width) / 2f, titleY);
+            UiLayout.text(titleFont, batch, op.getNameEn(), cx + 8f, titleY, cardW - 16f, 22f, Align.center, false);
 
             // 3. Opening Thai Name
             font.setColor(Color.WHITE);
             String thShort = op.getNameTh().split("\\(")[0].trim();
             layout.setText(font, thShort);
-            font.draw(batch, thShort, cx + (cardW - layout.width) / 2f, titleY - 24f);
+            UiLayout.text(font, batch, thShort, cx + 8f, titleY - 24f, cardW - 16f, 22f, Align.center, false);
 
             // 4. Role Badge
             boolean isWhite = (op.getPlayerColor() == Piece.Color.WHITE);
             String roleText = isWhite ? "ผู้เล่น: หมากขาว (White)" : "ผู้เล่น: หมากดำ (Black)";
             smallFont.setColor(isWhite ? new Color(0.95f, 0.90f, 0.60f, 1f) : new Color(0.70f, 0.85f, 1.0f, 1f));
             layout.setText(smallFont, roleText);
-            smallFont.draw(batch, roleText, cx + 30f, cy + cardH - 100f);
+            UiLayout.text(smallFont, batch, roleText, cx + 8f, cy + cardH - 100f, cardW - 16f, 20f, Align.center, false);
 
             // 5. Moves Preview (SAN)
             smallFont.setColor(new Color(0.75f, 0.82f, 0.95f, 1f));
             String movesSummary = getMovesSummary(op);
-            layout.setText(smallFont, movesSummary, new Color(0.75f, 0.82f, 0.95f, 1f), cardW - 16f, Align.center, true);
-            smallFont.draw(batch, layout, cx + 8f, titleY - 84f);
+            UiLayout.text(smallFont, batch, movesSummary, cx + 8f, titleY - 84f, cardW - 16f, 44f, Align.center, true);
 
             // 6. Tactical Goal / Description
             smallFont.setColor(new Color(0.85f, 0.85f, 0.85f, 0.85f));
-            layout.setText(smallFont, op.getTacticalGoal(), new Color(0.85f, 0.85f, 0.85f, 0.85f), cardW - 16f, Align.center, true);
-            smallFont.draw(batch, layout, cx + 8f, cy + 90f);
+            UiLayout.text(smallFont, batch, op.getTacticalGoal(), cx + 8f, cy + 100f, cardW - 16f, 56f, Align.center, true);
 
             // 7. Status & Completion
             if (completed) {

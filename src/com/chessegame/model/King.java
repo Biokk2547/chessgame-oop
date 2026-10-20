@@ -10,20 +10,21 @@ public class King extends Piece {
         if (dr <= 1 && dc <= 1) return !(dr == 0 && dc == 0);
 
         // Castling: 2 steps horizontally
-        if (dr == 0 && dc == 2 && !hasMoved()) {
+        int homeRow = getColor() == Color.WHITE ? 7 : 0;
+        if (dr == 0 && dc == 2 && !hasMoved() && from.row == homeRow && from.col == 4) {
             int row = from.row;
             if (to.col > from.col) {
                 // Kingside castling
                 Position rookPos = new Position(row, 7);
                 Piece r = board.getPiece(rookPos);
-                if (r instanceof Rook && !r.hasMoved() && board.isPathClear(from, rookPos)) {
+                if (r instanceof Rook && r.getColor() == getColor() && !r.hasMoved() && board.isPathClear(from, rookPos)) {
                     return true;
                 }
             } else {
                 // Queenside castling
                 Position rookPos = new Position(row, 0);
                 Piece r = board.getPiece(rookPos);
-                if (r instanceof Rook && !r.hasMoved() && board.isPathClear(from, rookPos)) {
+                if (r instanceof Rook && r.getColor() == getColor() && !r.hasMoved() && board.isPathClear(from, rookPos)) {
                     return true;
                 }
             }

@@ -149,7 +149,7 @@ public class OpeningPracticeScreen extends ScreenAdapter {
     @Override
     public void show() {
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camera.setToOrtho(false, UiLayout.width(), UiLayout.height());
 
         batch = new SpriteBatch();
         shapes = new ShapeRenderer();
@@ -343,8 +343,8 @@ public class OpeningPracticeScreen extends ScreenAdapter {
 
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-                float x = screenX;
-                float y = Gdx.graphics.getHeight() - screenY;
+                float x = UiLayout.x(screenX);
+                float y = UiLayout.height() - UiLayout.y(screenY);
 
                 // 1. Check Victory Modal Clicks if completed
                 if (isCompleted && handleVictoryModalClick(x, y)) return true;
@@ -401,8 +401,8 @@ public class OpeningPracticeScreen extends ScreenAdapter {
             @Override
             public boolean touchDragged(int screenX, int screenY, int pointer) {
                 if (isDragging) {
-                    dragCurrentX = screenX;
-                    dragCurrentY = Gdx.graphics.getHeight() - screenY;
+                    dragCurrentX = UiLayout.x(screenX);
+                    dragCurrentY = UiLayout.height() - UiLayout.y(screenY);
                     return true;
                 }
                 return false;
@@ -411,8 +411,8 @@ public class OpeningPracticeScreen extends ScreenAdapter {
             @Override
             public boolean touchUp(int screenX, int screenY, int pointer, int button) {
                 if (isDragging) {
-                    float x = screenX;
-                    float y = Gdx.graphics.getHeight() - screenY;
+                    float x = UiLayout.x(screenX);
+                    float y = UiLayout.height() - UiLayout.y(screenY);
 
                     float boardSize = getBoardSize();
                     float boardX = getBoardX(boardSize);
@@ -474,7 +474,7 @@ public class OpeningPracticeScreen extends ScreenAdapter {
                 statusColor = new Color(0.25f, 0.95f, 0.45f, 1f);
                 OpeningManager.recordOpeningCompleted(currentOpening.getId(), 3);
                 SoundManager.getInstance().playVictorySound();
-                particleSystem.emitVictoryConfetti(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+                particleSystem.emitVictoryConfetti(UiLayout.width(), UiLayout.height());
             } else {
                 statusMessage = "ถูกต้อง! คู่ต่อสู้กำลังเดินตามสาย...";
                 statusColor = new Color(0.40f, 0.85f, 1.0f, 1f);
@@ -488,8 +488,8 @@ public class OpeningPracticeScreen extends ScreenAdapter {
     }
 
     private boolean handleTopBarClick(float x, float y) {
-        int screenW = Gdx.graphics.getWidth();
-        int screenH = Gdx.graphics.getHeight();
+        int screenW = UiLayout.width();
+        int screenH = UiLayout.height();
 
         // Top Left: Back Button
         float backX = 20f;
@@ -521,7 +521,7 @@ public class OpeningPracticeScreen extends ScreenAdapter {
         float boardY = getBoardY(boardSize);
 
         float panelX = boardX + boardSize + 24f;
-        float panelW = Math.max(340f, Gdx.graphics.getWidth() - panelX - 24f);
+        float panelW = Math.max(340f, UiLayout.width() - panelX - 24f);
 
         float btnY1 = boardY + 54f;
         float btnY2 = boardY + 10f;
@@ -577,8 +577,8 @@ public class OpeningPracticeScreen extends ScreenAdapter {
     private boolean handleVictoryModalClick(float x, float y) {
         float modalW = 500f;
         float modalH = 280f;
-        float modalX = (Gdx.graphics.getWidth() - modalW) / 2f;
-        float modalY = (Gdx.graphics.getHeight() - modalH) / 2f;
+        float modalX = (UiLayout.width() - modalW) / 2f;
+        float modalY = (UiLayout.height() - modalH) / 2f;
 
         float btnW = 210f;
         float btnH = 42f;
@@ -654,8 +654,8 @@ public class OpeningPracticeScreen extends ScreenAdapter {
     }
 
     private float getBoardSize() {
-        int screenW = Gdx.graphics.getWidth();
-        int screenH = Gdx.graphics.getHeight();
+        int screenW = UiLayout.width();
+        int screenH = UiLayout.height();
         float availH = screenH - TOP_BAR_HEIGHT - 36f;
         float maxW = screenW * 0.50f;
         return Math.max(340f, Math.min(availH, Math.min(680f, maxW)));
@@ -666,14 +666,14 @@ public class OpeningPracticeScreen extends ScreenAdapter {
     }
 
     private float getBoardY(float boardSize) {
-        float availH = Gdx.graphics.getHeight() - TOP_BAR_HEIGHT - 24f;
+        float availH = UiLayout.height() - TOP_BAR_HEIGHT - 24f;
         return 12f + (availH - boardSize) / 2f;
     }
 
     @Override
     public void resize(int width, int height) {
         if (camera != null) {
-            camera.setToOrtho(false, width, height);
+            camera.setToOrtho(false, UiLayout.width(), UiLayout.height());
             camera.update();
         }
     }
@@ -687,17 +687,17 @@ public class OpeningPracticeScreen extends ScreenAdapter {
             if (activeGlideAnim.isFinished()) activeGlideAnim = null;
         }
 
-        int screenW = Gdx.graphics.getWidth();
-        int screenH = Gdx.graphics.getHeight();
+        int screenW = UiLayout.width();
+        int screenH = UiLayout.height();
 
-        float mx = Gdx.input.getX();
-        float my = screenH - Gdx.input.getY();
+        float mx = UiLayout.x(Gdx.input.getX());
+        float my = screenH - UiLayout.y(Gdx.input.getY());
 
         if (camera == null) camera = new OrthographicCamera();
         camera.setToOrtho(false, screenW, screenH);
         camera.update();
 
-        Gdx.gl.glViewport(0, 0, screenW, screenH);
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
         batch.setProjectionMatrix(camera.combined);
         shapes.setProjectionMatrix(camera.combined);
 
@@ -1078,11 +1078,13 @@ public class OpeningPracticeScreen extends ScreenAdapter {
         // --- Card 1: Header Text ---
         titleFont.setColor(Color.GOLD);
         String thTitle = currentOpening.getNameTh();
-        titleFont.draw(batch, thTitle, cardX + 16f, headerCardY + headerCardH - 14f);
+        UiLayout.text(titleFont, batch, thTitle, cardX + 16f, headerCardY + headerCardH - 14f,
+                cardW - 32f, 22f, Align.left, false);
 
         smallFont.setColor(new Color(0.80f, 0.86f, 0.96f, 1f));
         String categoryTag = "[" + currentOpening.getCategory().toUpperCase() + "]  " + currentOpening.getNameEn();
-        smallFont.draw(batch, categoryTag, cardX + 16f, headerCardY + headerCardH - 38f);
+        UiLayout.text(smallFont, batch, categoryTag, cardX + 16f, headerCardY + headerCardH - 38f,
+                cardW - 32f, 18f, Align.left, false);
 
         String roleStr = isWhite ? "คุณเล่น: หมากขาว (White)" : "คุณเล่น: หมากดำ (Black)";
         smallFont.setColor(isWhite ? new Color(0.95f, 0.92f, 0.70f, 1f) : new Color(0.70f, 0.85f, 1.0f, 1f));
@@ -1097,8 +1099,8 @@ public class OpeningPracticeScreen extends ScreenAdapter {
         smallFont.draw(batch, "เป้าหมายยุทธวิธีของสายนี้:", cardX + 14f, goalCardY + goalCardH - 12f);
 
         smallFont.setColor(new Color(0.88f, 0.90f, 0.95f, 1f));
-        layout.setText(smallFont, currentOpening.getTacticalGoal(), new Color(0.88f, 0.90f, 0.95f, 1f), cardW - 28f, Align.left, true);
-        smallFont.draw(batch, layout, cardX + 14f, goalCardY + goalCardH - 34f);
+        UiLayout.text(smallFont, batch, currentOpening.getTacticalGoal(), cardX + 14f, goalCardY + goalCardH - 34f,
+                cardW - 28f, goalCardH - 42f, Align.left, true);
 
         // --- Card 3: Move Sequence Timeline Text ---
         smallFont.setColor(Color.WHITE);
@@ -1115,7 +1117,7 @@ public class OpeningPracticeScreen extends ScreenAdapter {
             float px = cardX + 12f + i * (pillW + pillGap);
             String moveNot = (i < currentOpening.getMoveNotations().size()) ? currentOpening.getMoveNotations().get(i) : ("Step " + (i + 1));
             smallFont.setColor((i == stepIndex) ? new Color(0.10f, 0.10f, 0.12f, 1f) : Color.WHITE);
-            drawButtonText(batch, moveNot, px, pillY, pillW, pillH);
+            UiLayout.text(smallFont, batch, moveNot, px + 3f, pillY + 18f, pillW - 6f, 16f, Align.center, false);
         }
 
         // --- Card 4: Current Theory Text ---
@@ -1133,13 +1135,14 @@ public class OpeningPracticeScreen extends ScreenAdapter {
             currentTheory = "เข้าสู่ช่วงกลางเกม (Middlegame): หมากทุกตัวได้รับการพัฒนาอย่างมีประสิทธิภาพ พร้อมเปิดฉากสร้างความได้เปรียบ!";
         }
         font.setColor(new Color(0.90f, 0.92f, 0.98f, 1f));
-        layout.setText(font, currentTheory, new Color(0.90f, 0.92f, 0.98f, 1f), cardW - 28f, Align.left, true);
-        font.draw(batch, layout, cardX + 14f, theoryCardY + theoryCardH - 40f);
+        UiLayout.text(font, batch, currentTheory, cardX + 14f, theoryCardY + theoryCardH - 40f,
+                cardW - 28f, theoryCardH - 48f, Align.left, true);
 
         // --- Card 5: Live Status Banner Text ---
         font.setColor(Color.WHITE);
         layout.setText(font, statusMessage);
-        font.draw(batch, statusMessage, cardX + (cardW - layout.width) / 2f, statusBannerY + (statusBannerH + layout.height) / 2f);
+        UiLayout.text(font, batch, statusMessage, cardX + 12f, statusBannerY + 30f,
+                cardW - 24f, 24f, Align.center, false);
 
         // --- Action Buttons Text ---
         font.setColor(Color.WHITE);
@@ -1299,9 +1302,8 @@ public class OpeningPracticeScreen extends ScreenAdapter {
 
     private void drawButtonText(SpriteBatch batch, String text, float x, float y, float w, float h) {
         layout.setText(font, text);
-        float tx = x + (w - layout.width) / 2f;
-        float ty = y + (h + layout.height) / 2f;
-        font.draw(batch, text, tx, ty);
+        UiLayout.text(font, batch, text, x + 6f, y + (h + Math.min(layout.height, h - 8f)) / 2f,
+                w - 12f, h - 8f, Align.center, false);
     }
 
     private Texture getPieceTexture(Piece p) {

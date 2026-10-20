@@ -50,6 +50,9 @@ application {
 
 // Tell Gradle where to find the existing source layout (repo uses src/)
 sourceSets {
+    test {
+        java.srcDirs = ['tests']
+    }
     main {
         java {
             srcDirs = ['src']
@@ -59,6 +62,26 @@ sourceSets {
             srcDirs = []
         }
     }
+}
+
+tasks.register('regressionTest', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.chessegame.logic.RegressionTests'
+}
+
+tasks.register('uiSmokeTest', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.chessegame.ui.gdx.UiSmokeTest'
+    workingDir = projectDir
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}
+
+tasks.named('test') {
+    dependsOn regressionTest
+    // The regression suite uses a standalone Java runner rather than JUnit.
+    failOnNoDiscoveredTests = false
 }
 
 // Ensure run uses project root as working directory so Gdx.files.internal("...") loads from ./assets

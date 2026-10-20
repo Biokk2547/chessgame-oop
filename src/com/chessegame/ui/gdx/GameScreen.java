@@ -95,7 +95,7 @@ public class GameScreen extends ScreenAdapter {
     private BossLevel bossLevel = null;
     private int starsEarned = 0;
     private static final int BUTTON_BAR_HEIGHT = 80;
-    private static final int HEADER_BAR_HEIGHT = 76;
+    private static final int HEADER_BAR_HEIGHT = 156;
     private float stateTime = 0f;
 
     // Boss Ability Notifications
@@ -163,13 +163,13 @@ public class GameScreen extends ScreenAdapter {
     private PieceGlideAnimation activeGlideAnim = null;
 
     private float getBoardSize() {
-        int availableWidth = Gdx.graphics.getWidth() - (HORIZONTAL_MARGIN * 2);
-        int availableHeight = Gdx.graphics.getHeight() - HEADER_BAR_HEIGHT - BUTTON_BAR_HEIGHT - (VERTICAL_MARGIN * 2);
+        int availableWidth = UiLayout.width() - (HORIZONTAL_MARGIN * 2);
+        int availableHeight = UiLayout.height() - HEADER_BAR_HEIGHT - BUTTON_BAR_HEIGHT - (VERTICAL_MARGIN * 2);
         return Math.max(8, Math.min(MAX_BOARD_SIZE, Math.min(availableWidth, availableHeight)));
     }
 
     private float getOffsetX(float boardSize) {
-        return (Gdx.graphics.getWidth() - boardSize) / 2f;
+        return (UiLayout.width() - boardSize) / 2f;
     }
 
     private float getOffsetY() {
@@ -442,11 +442,11 @@ public class GameScreen extends ScreenAdapter {
 
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-                int y = Gdx.graphics.getHeight() - screenY;
-                int x = screenX;
+                float y = UiLayout.height() - UiLayout.y(screenY);
+                float x = UiLayout.x(screenX);
 
                 // Header Music Toggle Button
-                float headerY = Gdx.graphics.getHeight() - HEADER_BAR_HEIGHT;
+                float headerY = UiLayout.height() - HEADER_BAR_HEIGHT;
                 float musicBtnX = 14f + 66f;
                 float musicBtnY = headerY + 6f;
                 float musicBtnW = 115f;
@@ -457,7 +457,7 @@ public class GameScreen extends ScreenAdapter {
                 }
 
                 // Header Draw Offer & Resign Buttons
-                float eX = Gdx.graphics.getWidth() - 70f;
+                float eX = UiLayout.width() - 70f;
                 float drawBtnW = 86f;
                 float resignBtnW = 86f;
                 float drawBtnX = eX - 180f;
@@ -477,10 +477,10 @@ public class GameScreen extends ScreenAdapter {
                 }
 
                 if (overlayVisible) {
-                    float dialogW = Math.max(480f, Gdx.graphics.getWidth() * 0.58f);
+                    float dialogW = Math.max(480f, UiLayout.width() * 0.58f);
                     float dialogH = 210f;
-                    float dialogX = (Gdx.graphics.getWidth() - dialogW) / 2f;
-                    float dialogY = (Gdx.graphics.getHeight() - dialogH) / 2f;
+                    float dialogX = (UiLayout.width() - dialogW) / 2f;
+                    float dialogY = (UiLayout.height() - dialogH) / 2f;
 
                     float gapD = 10f;
                     float btnDW = (dialogW - 40f) / 3f;
@@ -524,8 +524,8 @@ public class GameScreen extends ScreenAdapter {
                 if (promotionModalVisible) {
                     float modalW = 380f;
                     float modalH = 140f;
-                    float modalX = (Gdx.graphics.getWidth() - modalW) / 2f;
-                    float modalY = (Gdx.graphics.getHeight() - modalH) / 2f;
+                    float modalX = (UiLayout.width() - modalW) / 2f;
+                    float modalY = (UiLayout.height() - modalH) / 2f;
                     float cardW = 80f;
                     float cardH = 75f;
                     float startCardX = modalX + 15f;
@@ -669,8 +669,8 @@ public class GameScreen extends ScreenAdapter {
                 if (dragSource == null || draggedPiece == null) {
                     return false;
                 }
-                float x = screenX;
-                float y = Gdx.graphics.getHeight() - screenY;
+                float x = UiLayout.x(screenX);
+                float y = UiLayout.height() - UiLayout.y(screenY);
                 dragCurrentX = x;
                 dragCurrentY = y;
                 if (!isDragging) {
@@ -686,8 +686,8 @@ public class GameScreen extends ScreenAdapter {
                 if (dragSource == null) {
                     return false;
                 }
-                float x = screenX;
-                float y = Gdx.graphics.getHeight() - screenY;
+                float x = UiLayout.x(screenX);
+                float y = UiLayout.height() - UiLayout.y(screenY);
 
                 if (isDragging) {
                     Position targetPos = getBoardPosition(x, y);
@@ -916,7 +916,7 @@ public class GameScreen extends ScreenAdapter {
         if (!board.hasKing(opponent)) {
             SoundManager.getInstance().playVictorySound();
             dialogManager.triggerCheckmate(moved);
-            particleSystem.emitVictoryConfetti(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            particleSystem.emitVictoryConfetti(UiLayout.width(), UiLayout.height());
             if (bossLevel != null && moved == Piece.Color.WHITE) {
                 starsEarned = calculateBossStars();
                 LevelProgressManager.recordLevelCompletion(bossLevel.getLevelId(), starsEarned);
@@ -933,7 +933,7 @@ public class GameScreen extends ScreenAdapter {
         if (ChessUtils.isCheckmate(board, opponent)) {
             SoundManager.getInstance().playVictorySound();
             dialogManager.triggerCheckmate(moved);
-            particleSystem.emitVictoryConfetti(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            particleSystem.emitVictoryConfetti(UiLayout.width(), UiLayout.height());
             if (bossLevel != null && moved == Piece.Color.WHITE) {
                 starsEarned = calculateBossStars();
                 LevelProgressManager.recordLevelCompletion(bossLevel.getLevelId(), starsEarned);
@@ -1087,7 +1087,7 @@ public class GameScreen extends ScreenAdapter {
     @Override
     public void resize(int width, int height) {
         if (camera != null) {
-            camera.setToOrtho(false, width, height);
+            camera.setToOrtho(false, UiLayout.width(), UiLayout.height());
             camera.update();
         }
     }
@@ -1116,14 +1116,14 @@ public class GameScreen extends ScreenAdapter {
         Gdx.gl.glClearColor(0.12f, 0.12f, 0.15f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        int screenW = Gdx.graphics.getWidth();
-        int screenH = Gdx.graphics.getHeight();
+        int screenW = UiLayout.width();
+        int screenH = UiLayout.height();
 
         if (camera == null) camera = new OrthographicCamera();
         camera.setToOrtho(false, screenW, screenH);
         camera.update();
 
-        Gdx.gl.glViewport(0, 0, screenW, screenH);
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
         batch.setProjectionMatrix(camera.combined);
         shapes.setProjectionMatrix(camera.combined);
 
@@ -1433,17 +1433,17 @@ public class GameScreen extends ScreenAdapter {
         // Render Particle System Effects (Move trails, Capture bursts, Victory confetti)
         particleSystem.render(shapes);
 
-        float headerY = Gdx.graphics.getHeight() - HEADER_BAR_HEIGHT;
+        float headerY = UiLayout.height() - HEADER_BAR_HEIGHT;
         float vX = 14f;
-        float vY = Gdx.graphics.getHeight() - 66f;
-        float eX = Gdx.graphics.getWidth() - 70f;
-        float eY = Gdx.graphics.getHeight() - 66f;
+        float vY = UiLayout.height() - 66f;
+        float eX = UiLayout.width() - 70f;
+        float eY = UiLayout.height() - 66f;
 
         // --- 1. Top Header Bar & Background Cards (Filled Shapes) ---
         shapes.begin(ShapeRenderer.ShapeType.Filled);
         // Header Bar Background
         shapes.setColor(0.13f, 0.13f, 0.16f, 1.0f);
-        shapes.rect(0f, headerY, Gdx.graphics.getWidth(), HEADER_BAR_HEIGHT);
+        shapes.rect(0f, headerY, UiLayout.width(), HEADER_BAR_HEIGHT);
 
         // Avatar Background Cards
         shapes.setColor(0.18f, 0.18f, 0.23f, 1f);
@@ -1499,7 +1499,7 @@ public class GameScreen extends ScreenAdapter {
 
         // Bottom Control Bar Background
         shapes.setColor(0.14f, 0.14f, 0.17f, 1f);
-        shapes.rect(0f, 0f, Gdx.graphics.getWidth(), BUTTON_BAR_HEIGHT + 4f);
+        shapes.rect(0f, 0f, UiLayout.width(), BUTTON_BAR_HEIGHT + 4f);
 
         float gap = 10f;
         float btnW = (destBoardSize - 3f * gap) / 4f;
@@ -1544,14 +1544,10 @@ public class GameScreen extends ScreenAdapter {
         // Real-Time Dialogue Banner Card (Center Header)
         if (dialogManager.isDialogueActive()) {
             shapes.setColor(0.09f, 0.09f, 0.12f, 0.95f);
-            float dlgX = 225f;
-            float dlgW = Gdx.graphics.getWidth() - 450f;
-            if (dlgW < 200f) {
-                dlgX = 170f;
-                dlgW = Gdx.graphics.getWidth() - 340f;
-            }
+            float dlgX = 24f;
+            float dlgW = UiLayout.width() - 48f;
             float dlgH = 48f;
-            float dlgY = Gdx.graphics.getHeight() - 62f;
+            float dlgY = headerY + 36f;
             shapes.rect(dlgX, dlgY, dlgW, dlgH);
 
             // Active Speaker Color Bar
@@ -1595,10 +1591,11 @@ public class GameScreen extends ScreenAdapter {
         String blackClock = opponentName + ": " + Clock.formatMs(clock.getRemaining(Clock.Side.BLACK));
 
         // White Player Info (Left side, right of Vampire avatar)
-        font.draw(batch, whiteClock, vX + 66f, Gdx.graphics.getHeight() - 16f);
+        UiLayout.text(font, batch, whiteClock, vX + 66f, UiLayout.height() - 16f,
+                UiLayout.width() / 2f - 100f, 22f, com.badlogic.gdx.utils.Align.left, false);
         font.setColor(new Color(0.9f, 0.9f, 0.95f, 1f));
         font.getData().setScale(0.82f);
-        font.draw(batch, "ผู้เล่นหมากขาว", vX + 66f, Gdx.graphics.getHeight() - 42f);
+        font.draw(batch, "ผู้เล่นหมากขาว", vX + 66f, UiLayout.height() - 42f);
 
         // Music Toggle Label
         font.setColor(Color.WHITE);
@@ -1614,33 +1611,29 @@ public class GameScreen extends ScreenAdapter {
         // Black Player Info (Right side, left of EvilBox avatar)
         font.setColor(Color.WHITE);
         font.getData().setScale(0.95f);
-        font.draw(batch, blackClock, eX - 180f, Gdx.graphics.getHeight() - 16f);
+        UiLayout.text(font, batch, blackClock, UiLayout.width() / 2f + 16f, UiLayout.height() - 16f,
+                eX - UiLayout.width() / 2f - 28f, 22f, com.badlogic.gdx.utils.Align.right, false);
         font.setColor(new Color(0.9f, 0.9f, 0.95f, 1f));
         font.getData().setScale(0.82f);
         String subLabel = (bossLevel != null) ? bossLevel.getHandicap().getTitle() : (isVsAi ? "AI (หมากดำ)" : "ผู้เล่นหมากดำ");
-        font.draw(batch, subLabel, eX - 180f, Gdx.graphics.getHeight() - 42f);
+        UiLayout.text(font, batch, subLabel, UiLayout.width() / 2f + 16f, UiLayout.height() - 42f,
+                eX - UiLayout.width() / 2f - 28f, 20f, com.badlogic.gdx.utils.Align.right, false);
 
         // Dialogue Text in Center Banner Card
         if (dialogManager.isDialogueActive()) {
             font.getData().setScale(0.90f);
             font.setColor(dialogManager.getCurrentSpeaker() == DialogManager.CharacterType.VAMPIRE ?
                     Color.CORAL : Color.CYAN);
-            float dlgX = 225f;
-            float dlgW = Gdx.graphics.getWidth() - 450f;
-            if (dlgW < 200f) {
-                dlgX = 170f;
-            }
-            font.draw(batch, dialogManager.getCurrentDialogue(), dlgX + 14f, Gdx.graphics.getHeight() - 30f);
+            UiLayout.text(font, batch, dialogManager.getCurrentDialogue(), 38f, headerY + 75f,
+                    UiLayout.width() - 76f, 21f, com.badlogic.gdx.utils.Align.left, false);
         }
 
         // Ability Notification Text Banner
         if (!abilityNotification.isEmpty()) {
             font.getData().setScale(0.85f);
             font.setColor(abilityNotificationColor);
-            float notifX = 225f;
-            float notifW = Gdx.graphics.getWidth() - 450f;
-            if (notifW < 200f) notifX = 170f;
-            font.draw(batch, abilityNotification, notifX + 14f, Gdx.graphics.getHeight() - 50f);
+            UiLayout.text(font, batch, abilityNotification, 38f, headerY + 52f,
+                    UiLayout.width() - 76f, 18f, com.badlogic.gdx.utils.Align.left, false);
         }
 
         // --- Action Button Text Labels (2-Row Clean Layout) ---
@@ -1681,12 +1674,12 @@ public class GameScreen extends ScreenAdapter {
             Gdx.gl.glEnable(GL20.GL_BLEND);
             shapes.begin(ShapeRenderer.ShapeType.Filled);
             shapes.setColor(0f, 0f, 0f, 0.75f);
-            shapes.rect(0f, 0f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            shapes.rect(0f, 0f, UiLayout.width(), UiLayout.height());
 
             float modalW = 380f;
             float modalH = 140f;
-            float modalX = (Gdx.graphics.getWidth() - modalW) / 2f;
-            float modalY = (Gdx.graphics.getHeight() - modalH) / 2f;
+            float modalX = (UiLayout.width() - modalW) / 2f;
+            float modalY = (UiLayout.height() - modalH) / 2f;
 
             shapes.setColor(0.15f, 0.15f, 0.20f, 0.98f);
             shapes.rect(modalX, modalY, modalW, modalH);
@@ -1721,12 +1714,12 @@ public class GameScreen extends ScreenAdapter {
             Gdx.gl.glEnable(GL20.GL_BLEND);
             shapes.begin(ShapeRenderer.ShapeType.Filled);
             shapes.setColor(0f, 0f, 0f, 0.75f);
-            shapes.rect(0f, 0f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            shapes.rect(0f, 0f, UiLayout.width(), UiLayout.height());
 
-            float dialogW = Math.max(480f, Gdx.graphics.getWidth() * 0.58f);
+            float dialogW = Math.max(480f, UiLayout.width() * 0.58f);
             float dialogH = 210f;
-            float dialogX = (Gdx.graphics.getWidth() - dialogW) / 2f;
-            float dialogY = (Gdx.graphics.getHeight() - dialogH) / 2f;
+            float dialogX = (UiLayout.width() - dialogW) / 2f;
+            float dialogY = (UiLayout.height() - dialogH) / 2f;
 
             shapes.setColor(0.14f, 0.14f, 0.18f, 0.98f);
             shapes.rect(dialogX, dialogY, dialogW, dialogH);

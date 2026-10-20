@@ -34,7 +34,7 @@ public class ChessAI {
     }
 
     private static final Random random = new Random();
-    private static final long MAX_TIME_MS = 3000L; // 1.3 seconds maximum per turn
+    private static final long MAX_TIME_MS = 3000L; // 3 seconds maximum per turn
     private static boolean searchAborted = false;
     private static long searchDeadline = 0L;
 

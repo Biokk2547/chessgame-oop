@@ -2,6 +2,12 @@
 
 เกมหมากรุกสากล (Chess) ที่พัฒนาด้วยภาษา **Pure Java** และขับเคลื่อนกราฟิกด้วย **LibGDX** พร้อมระบบการวิเคราะห์เกมระดับ Grandmaster, โหมดฝึกซ้อมเปิดเกม และโหมดประลองบอสพร้อมสกิลพิเศษ
 
+[ดาวน์โหลด ChessGame.jar เวอร์ชันล่าสุด](https://github.com/Biokk2547/chessgame-oop/raw/refs/heads/main/ChessGame.jar) — นำโหมด Puzzle ออกและแก้ UI แล้ว รวมรูป เสียง ฟอนต์ และไลบรารีในไฟล์เดียว สำหรับ Windows 64-bit (ทดสอบด้วย Java 26)
+
+เปิดด้วย `java --enable-native-access=ALL-UNNAMED -jar ChessGame.jar` โดย Stockfish เป็นส่วนเสริมภายนอก หากไม่มี เกมจะใช้ AI ภายใน
+
+[ดาวน์โหลดเพิ่มเติมจาก Google Drive](https://drive.google.com/drive/folders/1TJ8-dJgd3Td0usJgOssOtohcTjfqUICc?usp=sharing)
+
 ---
 
 ## 🌟 จุดเด่นและฟีเจอร์หลัก (Key Features)
@@ -25,11 +31,7 @@
   * หน้าจอ **2-Column Dashboard** แสดงเป้าหมายยุทธวิธี, แถบความคืบหน้า (Progress Bar) และคำอธิบายตาเดินแบบเรียลไทม์
   * **ระบบลูกศรคำใบ้นีออน (Neon Hint Arrow)**: แสดงทิศทางการเดินที่ถูกต้องบนกระดานทันที
   * สามารถสลับไปเล่นต่อกับ AI จากตำแหน่งกระดานของสายเปิดเกมได้ทันที
-* 📊 **ระบบวิเคราะห์เกมหลังจบแมตช์ (Game Review & Analysis)**:
-  * ระบบรีวิวเกมสไตล์ Chess.com / Lichess คำนวณค่า **Accuracy %** ทั้งฝ่ายขาวและดำ
-  * จำแนกคุณภาพตาเดิน 9 ระดับ: **Brilliant, Great, Best, Excellent, Good, Inaccuracy, Mistake, Miss, Blunder**
-  * กราฟและหลอดประเมินแต้มได้เปรียบ (Evaluation Bar) แบบเรียลไทม์
-  * แนะนำตาเดินที่ดีที่สุดด้วยลูกศรนีออนเรืองแสงสีเขียวบนกระดาน
+
 
 ---
 
@@ -59,7 +61,7 @@
 * **MVV-LVA (Most Valuable Victim - Least Valuable Attacker)**: จัดลำดับการกินหมากที่มีมูลค่าสูงก่อน ช่วยเพิ่มความเร็วการตัดกิ่งถึง 2 เท่า
 * **Quiescence Search**: ค้นหาการกินหมากต่อเนื่องในชั้นลึกสุด ป้องกันปัญหาจุดบอดสายตา (Horizon Effect)
 * **Iterative Deepening Search (IDS)**: ควบคุมเวลาค้นหาไม่ให้กระทบต่อเฟรมเรต UI (ตอบสนองไวภายใน 200ms - 350ms)
-* **Stockfish UCI Engine Integration**: รองรับการเชื่อมต่อกับ Stockfish Engine ภายนอกเพื่อการวิเคราะห์ระดับ Super Grandmaster
+* **Stockfish UCI Engine Integration**: รองรับการเชื่อมต่อกับ Stockfish Engine ภายนอกเพื่อการวิเคราะห์ระดับ Super Grandmaster (open soruce)
 
 ---
 
